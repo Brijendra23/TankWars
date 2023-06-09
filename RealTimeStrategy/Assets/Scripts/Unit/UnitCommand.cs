@@ -14,7 +14,14 @@ public class UnitCommand : MonoBehaviour
     void Start()
     {
         mainCamera= Camera.main;
+        GameOverHandler.ClientOnGameOver += ClientHandleGameOver; 
     }
+    private void OnDestroy()
+    {
+        GameOverHandler.ClientOnGameOver -= ClientHandleGameOver;
+    }
+
+   
 
     // Update is called once per frame
     void Update()
@@ -52,5 +59,9 @@ public class UnitCommand : MonoBehaviour
            unit.GetUnitMovement().CmdMove(point);
 
         }
+    }
+    private void ClientHandleGameOver(string winnerName)
+    {
+        enabled = false;
     }
 }
