@@ -31,7 +31,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &814516321257784398
 MonoBehaviour:
@@ -65,4 +65,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  myUnits: []
+  buildings:
+  - {fileID: 760706256515036107, guid: 96272c5afd694eb45864ab1dbc862471, type: 3}
+  - {fileID: 760706256515036107, guid: c732c1c3e0a0dea41aa85ac70235d944, type: 3}

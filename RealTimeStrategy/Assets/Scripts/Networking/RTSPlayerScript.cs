@@ -2,10 +2,27 @@ using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data.OleDb;
 using UnityEngine;
 
 public class RTSPlayerScript : NetworkBehaviour
 {
+    [SerializeField] private Building[] buildings= new Building[0];
+
+    [SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
+    private int resources = 500;//that buildings generate
+    public int GetResources()//get resources to update the ui in the starting 
+    {
+        return resources;
+    }
+    [Server]//so that no cheating is done and the process happens in the server
+    public void SetResources(int newResources)
+    {
+        resources= newResources;// everytime the method is called the resources are updated 
+    }
+
+    public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
+    
 
     private List<Unit> myUnits = new List<Unit>();
     private List<Building> myBuildings = new List<Building>();   
@@ -25,6 +42,25 @@ public class RTSPlayerScript : NetworkBehaviour
         Unit.ServerOnUnitDespawned -= ServerHandleUnitDespawned;
         Building.ServerOnBuildingSpawned -= ServerHandleBuildingSpawned;
         Building.ServerOnBuildingDespawned -= ServerHandleBuildingDespawned;
+    }
+    [Command]
+    public void CmdTryPlaceBuilding(int buildingId, Vector3 point)// asking server to spawn in every client
+    {
+        Building buildingToPlace = null;
+        foreach(Building building in buildings)//checking for particular id building to network
+        {
+            if (building.GetId() == buildingId)
+            {
+                buildingToPlace = building;
+                break;
+            }
+        }
+        if(buildingToPlace == null) { return; } //invalid index or building
+        GameObject buildingInstance =
+           Instantiate(buildingToPlace.gameObject, point, buildingToPlace.transform.rotation);//generating the gameobject that is to be networked
+        NetworkServer.Spawn(buildingInstance, connectionToClient);//networking the gameobject to spawning server and giving authority to spawning client
+
+
     }
     private void ServerHandleUnitSpawned(Unit unit)
     {
@@ -70,6 +106,10 @@ public class RTSPlayerScript : NetworkBehaviour
         Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
         Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
     }
+    private void ClientHandleResourcesUpdated(int oldResources, int newResources)
+    {
+        ClientOnResourcesUpdated?.Invoke(newResources);//lets the UI know that resources are updated
+    }
     private void AuthorityHandleUnitSpawned(Unit unit)
     {
        myUnits.Add(unit);
@@ -86,6 +126,7 @@ public class RTSPlayerScript : NetworkBehaviour
     {
         myBuildings.Remove(building);
     }
+
 
 
     #endregion

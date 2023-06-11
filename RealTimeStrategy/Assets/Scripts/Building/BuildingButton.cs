@@ -51,7 +51,7 @@ public class BuildingButton : MonoBehaviour,IPointerDownHandler, IPointerUpHandl
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());// raycasting from manicamer using mouse and converting the poin in screen to ray such that can be used for detection if it hits something
         if(Physics.Raycast(ray, out RaycastHit hit,Mathf.Infinity,floorMask)) //checks if the ray hits something at infinite distance from main camera on the floor mask layer
         {
-            //placebuilding
+            player.CmdTryPlaceBuilding(building.GetId(), hit.point);
         }
         Destroy(buildingPreviewInstance);
     }
