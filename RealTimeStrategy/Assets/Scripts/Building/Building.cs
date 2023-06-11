@@ -7,6 +7,7 @@ using System;
 public class Building : NetworkBehaviour
 {
     // fields or properties of the building
+    [SerializeField] private GameObject buildingPreview=null;
     [SerializeField] private Sprite icon;
     [SerializeField] private int id=-1;
     [SerializeField] private int price=100;
@@ -16,14 +17,20 @@ public class Building : NetworkBehaviour
     public static event Action<Building> AuthorityOnBuildingSpawned;
     public static event Action<Building> AuthorityOnBuildingDespawned;
 
+    //to use in UI
+    public GameObject GetBuildingPreview() { return buildingPreview; }
+
+    //to use in UI
     public Sprite GetIcon() 
     { 
         return icon;
     }
+    //to use in UI
     public int GetId()
     {
         return id;
     }
+    //to use in UI
     public int GetPrice()
     {
         return price;
