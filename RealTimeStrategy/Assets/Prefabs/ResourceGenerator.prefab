@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &6146401036747705692
+--- !u!1 &53
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,7 +8,7 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 5489626386779492687}
+  - component: {fileID: 77}
   m_Layer: 0
   m_Name: SpawnPoint
   m_TagString: Untagged
@@ -16,13 +16,13 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &5489626386779492687
+--- !u!4 &77
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6146401036747705692}
+  m_GameObject: {fileID: 53}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -2}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -261,6 +261,10 @@ PrefabInstance:
       propertyPath: m_Center.y
       value: 0.5
       objectReference: {fileID: 0}
+    - target: {fileID: 2364692022710937269, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
+      propertyPath: m_IsTrigger
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3138735443767826947, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       propertyPath: m_Name
       value: ResourceGenerator
@@ -369,14 +373,14 @@ PrefabInstance:
       addedObject: {fileID: 5851532179021208274}
     - targetCorrespondingSourceObject: {fileID: 4657498708120358921, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 5489626386779492687}
+      addedObject: {fileID: 77}
     - targetCorrespondingSourceObject: {fileID: 4657498708120358921, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2669794719609502823}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 3138735443767826947, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       insertIndex: -1
-      addedObject: {fileID: -6919711831804570823}
+      addedObject: {fileID: 144}
   m_SourcePrefab: {fileID: 100100000, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
 --- !u!114 &2226654935323935290 stripped
 MonoBehaviour:
@@ -399,7 +403,7 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3138735443767826947, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
   m_PrefabInstance: {fileID: 8461803530565757501}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &-6919711831804570823
+--- !u!114 &144
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

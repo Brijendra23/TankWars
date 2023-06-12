@@ -1,33 +1,65 @@
-using Mirror;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using Unity.VisualScripting;
+using Mirror;
 using UnityEngine;
 
 public class RTSPlayerScript : NetworkBehaviour
 {
+    [SerializeField] private LayerMask buildingBlockLayer = new LayerMask();
     [SerializeField] private Building[] buildings= new Building[0];
+    
+    [SerializeField] private float buildingRangeLimit = 5.0f;
 
     [SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
     private int resources = 500;//that buildings generate
+
+    public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
+
+    private List<Unit> myUnits = new List<Unit>();
+    private List<Building> myBuildings = new List<Building>();
     public int GetResources()//get resources to update the ui in the starting 
     {
         return resources;
     }
+    
+
+    
+    
+
+       
+
+    public List<Unit> GetMyUnits() { return myUnits; }
+    public List<Building> GetMyBuildings() {  return myBuildings; }
     [Server]//so that no cheating is done and the process happens in the server
     public void SetResources(int newResources)
     {
-        resources= newResources;// everytime the method is called the resources are updated 
+        resources = newResources;// everytime the method is called the resources are updated 
     }
 
-    public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
-    
+    public bool CanPlaceBuilding(BoxCollider buildingCollider, Vector3 point)
+    {
+        if (Physics.CheckBox(point + buildingCollider.center,
+            buildingCollider.size / 2,
+            Quaternion.identity,
+            buildingBlockLayer))//checking whether thebuilding we are going to place collides with any building near by
+        {
+            return false;
+        }
+        
+        foreach (Building building in myBuildings)
+        {
+            if ((point - building.transform.position).sqrMagnitude <= buildingRangeLimit * buildingRangeLimit)//checking the range with the building
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
-    private List<Unit> myUnits = new List<Unit>();
-    private List<Building> myBuildings = new List<Building>();   
-
-    public List<Unit> GetMyUnits() { return myUnits; }
     #region Server
     public override void OnStartServer()
     {
@@ -56,10 +88,15 @@ public class RTSPlayerScript : NetworkBehaviour
             }
         }
         if(buildingToPlace == null) { return; } //invalid index or building
+
+        if(resources< buildingToPlace.GetPrice()) { return; }//checking for the building price
+        BoxCollider buildingCollider= buildingToPlace.GetComponent<BoxCollider>();
+       
+        if (!CanPlaceBuilding(buildingCollider,point)) { return; }
         GameObject buildingInstance =
            Instantiate(buildingToPlace.gameObject, point, buildingToPlace.transform.rotation);//generating the gameobject that is to be networked
         NetworkServer.Spawn(buildingInstance, connectionToClient);//networking the gameobject to spawning server and giving authority to spawning client
-
+        SetResources(resources- buildingToPlace.GetPrice() );
 
     }
     private void ServerHandleUnitSpawned(Unit unit)

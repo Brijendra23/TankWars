@@ -22,8 +22,8 @@ public class ResourceGenerator : NetworkBehaviour
     }
     public override void OnStopServer()
     {
-        health.ServerOnDie += ServerHandleDie;//what should be done when building die- unsubscribing
-        GameOverHandler.ServerOnGameOver += ServerHandleGameOver;// what happens when server got disconnected- unsubscribing
+        health.ServerOnDie -= ServerHandleDie;//what should be done when building die- unsubscribing
+        GameOverHandler.ServerOnGameOver -= ServerHandleGameOver;// what happens when server got disconnected- unsubscribing
 
     }
     [ServerCallback]
