@@ -221,6 +221,14 @@ PrefabInstance:
       propertyPath: _assetId
       value: 1025910187
       objectReference: {fileID: 0}
+    - target: {fileID: 111706018378395063, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
+      propertyPath: colorRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 111706018378395063, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
+      propertyPath: colorRenderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 80}
     - target: {fileID: 317089185852692938, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       propertyPath: healthBarImage
       value: 

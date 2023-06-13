@@ -223,6 +223,11 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8065812625741600504, guid: 45661fd6c5f6b68429957cae648209d2, type: 3}
   m_PrefabInstance: {fileID: 8065812625741600479}
   m_PrefabAsset: {fileID: 0}
+--- !u!23 &42 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 8065812625741600501, guid: 45661fd6c5f6b68429957cae648209d2, type: 3}
+  m_PrefabInstance: {fileID: 8065812625741600479}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1332965788223730731 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 9047767434083345140, guid: 45661fd6c5f6b68429957cae648209d2, type: 3}
@@ -245,6 +250,14 @@ PrefabInstance:
       propertyPath: _assetId
       value: 1025910187
       objectReference: {fileID: 0}
+    - target: {fileID: 111706018378395063, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
+      propertyPath: colorRenderers.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 111706018378395063, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
+      propertyPath: colorRenderers.Array.data[0]
+      value: 
+      objectReference: {fileID: 42}
     - target: {fileID: 317089185852692938, guid: c3059d1166dc1de47a57e37b0e535697, type: 3}
       propertyPath: healthBarImage
       value: 

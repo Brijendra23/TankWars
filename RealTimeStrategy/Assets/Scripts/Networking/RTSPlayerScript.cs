@@ -18,7 +18,7 @@ public class RTSPlayerScript : NetworkBehaviour
     private int resources = 500;//that buildings generate
 
     public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
-
+    private Color teamColor = new Color();
     private List<Unit> myUnits = new List<Unit>();
     private List<Building> myBuildings = new List<Building>();
     public int GetResources()//get resources to update the ui in the starting 
@@ -27,18 +27,17 @@ public class RTSPlayerScript : NetworkBehaviour
     }
     
 
-    
+    public Color GetTeamColor() //getting team color
+    { 
+        return teamColor; 
+    }   
     
 
        
 
     public List<Unit> GetMyUnits() { return myUnits; }
     public List<Building> GetMyBuildings() {  return myBuildings; }
-    [Server]//so that no cheating is done and the process happens in the server
-    public void SetResources(int newResources)
-    {
-        resources = newResources;// everytime the method is called the resources are updated 
-    }
+    
 
     public bool CanPlaceBuilding(BoxCollider buildingCollider, Vector3 point)
     {
@@ -74,6 +73,16 @@ public class RTSPlayerScript : NetworkBehaviour
         Unit.ServerOnUnitDespawned -= ServerHandleUnitDespawned;
         Building.ServerOnBuildingSpawned -= ServerHandleBuildingSpawned;
         Building.ServerOnBuildingDespawned -= ServerHandleBuildingDespawned;
+    }
+    [Server]
+    public void SetTeamColor(Color newTeamColor)
+    {
+       teamColor= newTeamColor;
+    }
+    [Server]//so that no cheating is done and the process happens in the server
+    public void SetResources(int newResources)
+    {
+        resources = newResources;// everytime the method is called the resources are updated 
     }
     [Command]
     public void CmdTryPlaceBuilding(int buildingId, Vector3 point)// asking server to spawn in every client
