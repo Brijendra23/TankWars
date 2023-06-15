@@ -16,6 +16,8 @@ public class RTSPlayerScript : NetworkBehaviour
     [SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
     private int resources = 500;//that buildings generate
 
+    
+ 
     public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
     private Color teamColor = new Color();
     private List<Unit> myUnits = new List<Unit>();
