@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class RTSPlayerScript : NetworkBehaviour
 {
@@ -15,13 +16,31 @@ public class RTSPlayerScript : NetworkBehaviour
 
     [SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
     private int resources = 500;//that buildings generate
+    [SyncVar(hook =nameof(AuthorityHandlePartyOwnerStateUpdated))]
+    private bool isPartyOwner = false;
 
-    
- 
+    [SyncVar(hook = nameof(ClientHandleDisplayNameUpdated))]//namesof the player to be stored
+    private string displayName;
+
+
+    public static event Action ClientOnInfoUpdated;
+
     public event Action<int> ClientOnResourcesUpdated;//to tell the UI and let he client knw about the resources and change
+    public static event Action<bool> AuthorityOnPartyOwnerStateUpdated;
+
+
     private Color teamColor = new Color();
     private List<Unit> myUnits = new List<Unit>();
     private List<Building> myBuildings = new List<Building>();
+
+    public string GetDisplayName()
+    {
+        return displayName;
+    }
+    public bool GetIsPartyOwner()
+    {
+        return isPartyOwner;
+    }
     public Transform GetCameraTransform()
     {
         return cameraTransform;
@@ -71,6 +90,7 @@ public class RTSPlayerScript : NetworkBehaviour
         Unit.ServerOnUnitDespawned += ServerHandleUnitDespawned;
         Building.ServerOnBuildingSpawned += ServerHandleBuildingSpawned;
         Building.ServerOnBuildingDespawned += ServerHandleBuildingDespawned;
+        DontDestroyOnLoad(gameObject);
     }
     public override void OnStopServer()
     {
@@ -79,6 +99,19 @@ public class RTSPlayerScript : NetworkBehaviour
         Building.ServerOnBuildingSpawned -= ServerHandleBuildingSpawned;
         Building.ServerOnBuildingDespawned -= ServerHandleBuildingDespawned;
     }
+    [Server]
+    public void SetDisplayName(string newName)
+    {
+        displayName = newName;
+    }
+
+
+    [Server]
+    public void SetIsPartyOwner(bool state)
+    {
+        isPartyOwner = state;
+    }
+
     [Server]
     public void SetTeamColor(Color newTeamColor)
     {
@@ -89,6 +122,14 @@ public class RTSPlayerScript : NetworkBehaviour
     {
         resources = newResources;// everytime the method is called the resources are updated 
     }
+    [Command]
+    public void CmdStartGame()
+    {
+        if(!isPartyOwner) { return; }
+        ((RTSNetworkManager)NetworkManager.singleton).StartGame();
+    }
+    
+    
     [Command]
     public void CmdTryPlaceBuilding(int buildingId, Vector3 point)// asking server to spawn in every client
     {
@@ -148,18 +189,59 @@ public class RTSPlayerScript : NetworkBehaviour
         Building.AuthorityOnBuildingDespawned += AuthorityHandleBuildingDespawned;
 
     }
+    public override void OnStartClient()
+    {
+        if (NetworkServer.active) { return; }//stops the client from adding twice
+        DontDestroyOnLoad(gameObject);
+
+       ((RTSNetworkManager)NetworkManager.singleton).Player.Add(this);
+
+
+    }
     public override void OnStopClient()
     {
-     
-        if (!isClientOnly||!isOwned) { return; }
+        if (isClientOnly) 
+        {
+            ((RTSNetworkManager)NetworkManager.singleton).Player.Remove(this);//removes everyone
+            ClientOnInfoUpdated?.Invoke();//invoked when someone disconnects
+        }
+        else
+        {
+            ClientOnInfoUpdated?.Invoke();//invoked when someone disconnects
+            return;
+        }
+       
+        
+
+       
+        
+        if(!isOwned) { return; }
         Unit.AuthorityOnUnitSpawned -= AuthorityHandleUnitSpawned;
         Unit.AuthorityOnUnitDespawned -= AuthorityHandleUnitDespawned;
         Building.AuthorityOnBuildingSpawned -= AuthorityHandleBuildingSpawned;
         Building.AuthorityOnBuildingDespawned -= AuthorityHandleBuildingDespawned;
+
+
+
     }
+    
+
     private void ClientHandleResourcesUpdated(int oldResources, int newResources)
     {
         ClientOnResourcesUpdated?.Invoke(newResources);//lets the UI know that resources are updated
+    }
+
+    private void ClientHandleDisplayNameUpdated(string oldDisplayName, string newDiplayName)
+    {
+        ClientOnInfoUpdated?.Invoke();//invoked  when the names are changed or assigned
+
+
+    }
+    private void AuthorityHandlePartyOwnerStateUpdated(bool oldState,bool newState)
+    {
+        if (!isOwned) { return; }
+        AuthorityOnPartyOwnerStateUpdated.Invoke(newState);
+
     }
     private void AuthorityHandleUnitSpawned(Unit unit)
     {

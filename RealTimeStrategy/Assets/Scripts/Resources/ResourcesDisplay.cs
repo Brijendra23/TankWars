@@ -9,21 +9,14 @@ public class Resources : MonoBehaviour
     [SerializeField] private TMP_Text resourcesText = null;
 
     private RTSPlayerScript player;
-
-    private void Update()
+    private void Start()
     {
-        if (player == null)
-        {
-            player = NetworkClient.connection.identity.GetComponent<RTSPlayerScript>();
-
-            if (player != null)
-            {
-                ClientHandleResourcesUpdated(player.GetResources());
-                player.ClientOnResourcesUpdated += ClientHandleResourcesUpdated;
-            }
-        }
-     
+        player = NetworkClient.connection.identity.GetComponent<RTSPlayerScript>();
+        
+        ClientHandleResourcesUpdated(player.GetResources());
+        player.ClientOnResourcesUpdated += ClientHandleResourcesUpdated;
     }
+ 
     private void OnDestroy()
     {
         player.ClientOnResourcesUpdated -= ClientHandleResourcesUpdated;

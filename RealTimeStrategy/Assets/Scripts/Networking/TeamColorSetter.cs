@@ -9,7 +9,15 @@ public class TeamColorSetter : NetworkBehaviour
 
     [SyncVar(hook =nameof(HandleTeamColorUpdated))]
     private Color teamColor = new Color();// server gives different team color this variable syncs tjhe color of the team according to server
+
+
+    
+    
+    
     #region Server
+
+
+
     public override void OnStartServer()
     {
         RTSPlayerScript player=connectionToClient.identity.GetComponent<RTSPlayerScript>();

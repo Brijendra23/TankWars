@@ -27,15 +27,16 @@ public class BuildingButton : MonoBehaviour,IPointerDownHandler, IPointerUpHandl
         mainCamera = Camera.main;// for rycasting
         iconImage.sprite = building.GetIcon();
         priceText.text= building.GetPrice().ToString();// setting the price text
+
+        player = NetworkClient.connection.identity.GetComponent<RTSPlayerScript>();// if to determine the player 
+
         buildingCollider = building.GetComponent<BoxCollider>();//to check if can place building
     }
 
     private void Update()
     {
-        if (player== null)
-        {
-            player=NetworkClient.connection.identity.GetComponent<RTSPlayerScript>();// if to determine the player 
-        }
+       
+           
         if(buildingPreviewInstance == null) { return; }//no prevview prefab then return
         UpdateBuildingPreview();// update preview alon with location of hit point method
     }

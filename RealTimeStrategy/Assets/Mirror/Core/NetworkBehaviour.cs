@@ -19,8 +19,8 @@ namespace Mirror
     public enum SyncDirection { ServerToClient, ClientToServer }
 
     /// <summary>Base class for networked components.</summary>
+    // [RequireComponent(typeof(NetworkIdentity))] disabled to allow child NetworkBehaviours
     [AddComponentMenu("")]
-    [RequireComponent(typeof(NetworkIdentity))]
     [HelpURL("https://mirror-networking.gitbook.io/docs/guides/networkbehaviour")]
     public abstract class NetworkBehaviour : MonoBehaviour
     {
@@ -293,6 +293,27 @@ namespace Mirror
             };
         }
 
+        protected virtual void OnValidate()
+        {
+            // we now allow child NetworkBehaviours.
+            // we can not [RequireComponent(typeof(NetworkIdentity))] anymore.
+            // instead, we need to ensure a NetworkIdentity is somewhere in the
+            // parents.
+            // only run this in Editor. don't add more runtime overhead.
+
+#if UNITY_EDITOR
+            if (GetComponent<NetworkIdentity>() == null &&
+#if UNITY_2020_3_OR_NEWER
+                GetComponentInParent<NetworkIdentity>(true) == null)
+#else
+                GetComponentInParent<NetworkIdentity>() == null)
+#endif
+            {
+                Debug.LogError($"{GetType()} on {name} requires a NetworkIdentity. Please add a NetworkIdentity component to {name} or it's parents.");
+            }
+#endif
+        }
+
         // pass full function name to avoid ClassA.Func <-> ClassB.Func collisions
         protected void SendCommandInternal(string functionFullName, int functionHashCode, NetworkWriter writer, int channelId, bool requiresAuthority = true)
         {
@@ -301,7 +322,7 @@ namespace Mirror
             //       to avoid Wrapper functions. a lot of people requested this.
             if (!NetworkClient.active)
             {
-                Debug.LogError($"Command Function {functionFullName} called on {name} without an active client.", gameObject);
+                Debug.LogError($"Command {functionFullName} called on {name} without an active client.", gameObject);
                 return;
             }
 
@@ -313,14 +334,15 @@ namespace Mirror
                 // or client may have been set NotReady intentionally, so
                 // only warn if on the reliable channel.
                 if (channelId == Channels.Reliable)
-                    Debug.LogWarning($"Command Function {functionFullName} called on {name} while NetworkClient is not ready.\nThis may be ignored if client intentionally set NotReady.", gameObject);
+                    Debug.LogWarning($"Command {functionFullName} called on {name} while NetworkClient is not ready.\nThis may be ignored if client intentionally set NotReady.", gameObject);
                 return;
             }
 
-            // local players can always send commands, regardless of authority, other objects must have authority.
+            // local players can always send commands, regardless of authority,
+            // other objects must have authority.
             if (!(!requiresAuthority || isLocalPlayer || isOwned))
             {
-                Debug.LogWarning($"Command Function {functionFullName} called on {name} without authority.", gameObject);
+                Debug.LogWarning($"Command {functionFullName} called on {name} without authority.", gameObject);
                 return;
             }
 
@@ -331,7 +353,7 @@ namespace Mirror
             // => see also: https://github.com/vis2k/Mirror/issues/2629
             if (NetworkClient.connection == null)
             {
-                Debug.LogError($"Command Function {functionFullName} called on {name} with no client running.", gameObject);
+                Debug.LogError($"Command {functionFullName} called on {name} with no client running.", gameObject);
                 return;
             }
 
@@ -362,7 +384,7 @@ namespace Mirror
             // this was in Weaver before
             if (!NetworkServer.active)
             {
-                Debug.LogError($"RPC Function {functionFullName} called on Client.", gameObject);
+                Debug.LogError($"RPC Function {functionFullName} called without an active server.", gameObject);
                 return;
             }
 
@@ -648,7 +670,9 @@ namespace Mirror
         protected GameObject GetSyncVarGameObject(uint netId, ref GameObject gameObjectField)
         {
             // server always uses the field
-            if (isServer)
+            // if neither, fallback to original field
+            // fixes: https://github.com/MirrorNetworking/Mirror/issues/3447
+            if (isServer || !isClient)
             {
                 return gameObjectField;
             }
@@ -956,7 +980,9 @@ namespace Mirror
         protected NetworkIdentity GetSyncVarNetworkIdentity(uint netId, ref NetworkIdentity identityField)
         {
             // server always uses the field
-            if (isServer)
+            // if neither, fallback to original field
+            // fixes: https://github.com/MirrorNetworking/Mirror/issues/3447
+            if (isServer || !isClient)
             {
                 return identityField;
             }
@@ -1019,7 +1045,9 @@ namespace Mirror
         protected T GetSyncVarNetworkBehaviour<T>(NetworkBehaviourSyncVar syncNetBehaviour, ref T behaviourField) where T : NetworkBehaviour
         {
             // server always uses the field
-            if (isServer)
+            // if neither, fallback to original field
+            // fixes: https://github.com/MirrorNetworking/Mirror/issues/3447
+            if (isServer || !isClient)
             {
                 return behaviourField;
             }
