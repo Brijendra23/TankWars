@@ -26,7 +26,10 @@ public class LobbyMenu : MonoBehaviour
         RTSPlayerScript.AuthorityOnPartyOwnerStateUpdated -= AuthorityHandlePartyOwnerStateUpdated;
         RTSPlayerScript.ClientOnInfoUpdated -= ClientHandleInfoUpdated;
     }
-
+    private void HandleClientConnected()
+    {
+        lobbyUI.SetActive(true);
+    }
     private void ClientHandleInfoUpdated()
     {
         List<RTSPlayerScript> players = ((RTSNetworkManager)NetworkManager.singleton).Player;
@@ -41,10 +44,7 @@ public class LobbyMenu : MonoBehaviour
         startGameButton.interactable = players.Count >=2;
     }
 
-    private void HandleClientConnected()
-    {
-        lobbyUI.SetActive(true);
-    }
+    
     private void AuthorityHandlePartyOwnerStateUpdated(bool state)
     {
        startGameButton.gameObject.SetActive(state);
@@ -56,7 +56,7 @@ public class LobbyMenu : MonoBehaviour
 
     public void LeaveLobby()
     {
-        if(NetworkServer.active&&NetworkClient.active)//if you are the host
+        if(NetworkServer.active&&NetworkClient.isConnected)//if you are the host
         {
             NetworkManager.singleton.StopHost();
         }

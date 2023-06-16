@@ -15,7 +15,7 @@ public class RTSPlayerScript : NetworkBehaviour
     [SerializeField] private float buildingRangeLimit = 5.0f;
 
     [SyncVar(hook = nameof(ClientHandleResourcesUpdated))]
-    private int resources = 500;//that buildings generate
+    private int resources = 600;//that buildings generate
     [SyncVar(hook =nameof(AuthorityHandlePartyOwnerStateUpdated))]
     private bool isPartyOwner = false;
 

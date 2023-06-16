@@ -49,6 +49,7 @@ public class RTSNetworkManager : NetworkManager
         isGameInProgress=true;
         ServerChangeScene("Scene_Map_01");
     }
+    
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         base.OnServerAddPlayer(conn);
