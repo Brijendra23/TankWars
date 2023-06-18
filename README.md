@@ -9,6 +9,16 @@ Hosting of the server is done via Mirror, and the server is visible to only the 
 
 Use Steam to join the host lobby from the friends list to enter the lobby to start the game.
 
+Installation and hosting lobby-
+
+https://github.com/Brijendra23/RealtimeStrategyGame/assets/105620708/efe81e7b-b63b-470b-855b-64ada4a82f52
+
+Joining lobby-
+
+
+https://github.com/Brijendra23/RealtimeStrategyGame/assets/105620708/7fdd8cbe-a1c4-4faa-bf97-e2f4f9dedae1
+
+
 Controls-
 
 Use WASD or arrow keys for the camera movement throughout the map
